@@ -4,3 +4,7 @@
 npm-debug.log*
 /.firebase
 .env
+.env.enc
+.env.development
+.env.production
+

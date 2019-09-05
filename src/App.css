@@ -46,3 +46,8 @@
   padding: .2em .3em;
   border-radius: .2em;
 }
+
+.dropdown-toggle,
+.dropdown-menu {
+  width: 100%;
+}

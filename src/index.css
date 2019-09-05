@@ -1,9 +1,21 @@
 html, body, #app {
   height: 100%;
 }
+
 body {
-  font-family: sans-serif;
+  font-family: 'Ubuntu', serif;
   margin: 0;
   padding: 0;
-  background: linear-gradient(to bottom, rgb(10, 10, 50) 0%,rgb(60, 10, 60) 100%);
 }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Hepta Slab', serif;
+}
+
+code, input {
+  font-family: 'Source Code Pro', monospace;
+}
+
+/* input.textarea {
+  background-image: url('/textareaBackground.png')
+} */

@@ -14,11 +14,25 @@ export const editItemText = (id, index, text) => ({
   text
 })
 
-export const editItemType = (id, index, type) => ({
+export const editItemSequence = (id, index, text) => ({
+  type: 'EDIT_ITEM_SEQUENCE',
+  id,
+  index,
+  text
+})
+
+export const editItemType = (id, index, typ) => ({
   type: 'EDIT_ITEM_TYPE',
   id,
   index,
-  type
+  typ
+})
+
+export const editItemMolecule = (id, index, typ) => ({
+  type: 'EDIT_ITEM_MOLECULE',
+  id,
+  index,
+  typ
 })
 
 export const editItemPrediction = (id, pred) => ({
@@ -37,12 +51,43 @@ export const predictItems = () => ({
   type: 'PREDICT_ITEMS'
 })
 
-export const updatResultItems = (items) => ({
-  type: 'UPDATE_PREDICT_ITEMS',
-  items
+export const predictItem = (id) => ({
+  type: 'PREDICT_ITEM',
+  id
+})
+
+export const predictItemsJob = () => ({
+  type: 'PREDICT_ITEMS_JOB',
+  jobid
+})
+
+export const predictItemJob = (id) => ({
+  type: 'PREDICT_ITEM_JOB',
+  id,
+  jobid
 })
 
 export const moveParticles = (time) => ({
   type: 'MOVE_PARTICLES',
   time
+})
+
+export const hideUI = () => ({
+  type: "HIDE_UI"
+})
+
+export const showUI = () => ({
+  type: "SHOW_UI"
+})
+
+export const userCompleted = () => ({
+  type: "USER_COMPLETE"
+})
+
+export const userCompletedCancel = () => ({
+  type: "USER_NOT_COMPLETE"
+})
+
+export const checkUserCompleted = () => ({
+  type: "CHECK_USER_COMPLETE"
 })
