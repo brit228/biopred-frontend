@@ -1,12 +1,14 @@
 import React, {useState} from 'react'
 import { parseString } from 'xml2js'
-import { Card, Container, Row, Col, Form, ListGroup, DropdownButton, Dropdown, Button, Jumbotron, InputGroup } from 'react-bootstrap'
+import { Card, Container, Row, Col, Form, ListGroup, DropdownButton, Dropdown, Button, Jumbotron, InputGroup, Spinner } from 'react-bootstrap'
 import { FaCheck, FaTimes } from 'react-icons/fa'
 import { withFirebase } from './Firebase'
 
-const SearchBar = ({ text, moltype, sequence, editItemText, editItemVals }) => (
+import ResultBox from './ResultBox'
+
+const SearchBar = ({ disabled, text, moltype, sequence, editItemText, editItemVals }) => (
   <InputGroup>
-    <Form.Control onChange={(e) => {
+    <Form.Control disabled={siabled} onChange={(e) => {
       editItemText(e.target.value)
       fetch('https://www.rcsb.org/pdb/rest/search', {
         method: 'POST',
@@ -58,9 +60,9 @@ const SearchBar = ({ text, moltype, sequence, editItemText, editItemVals }) => (
   </InputGroup>
 )
 
-const PDBSearchBar = ({ text, moltype, sequence, editItemText, editItemVals }) => (
+const PDBSearchBar = ({ disabled, text, moltype, sequence, editItemText, editItemVals }) => (
   <InputGroup>
-    <Form.Control onChange={(e) => {
+    <Form.Control disabled={disabled} onChange={(e) => {
       editItemText(e.target.value.slice(0,4))
       if (e.target.value.length === 4) {
         const pdbid = e.target.value.toLowerCase()
@@ -104,9 +106,9 @@ const PDBSearchBar = ({ text, moltype, sequence, editItemText, editItemVals }) =
 )
 
 const PredictionItem = ({
-  id, item1, item2, status, prediction, updateItem1Input, updateItem1Molecule,
+  id, item1, item2, status, jobid, prediction, updateItem1Input, updateItem1Molecule,
   updateItem2Input, updateItem2Molecule, updatePrediction, editItem1Text,
-  editItem2Text, editItem1Sequence, editItem2Sequence, remove, predict
+  editItem2Text, editItem1Sequence, editItem2Sequence, remove, predict, firebase
 }) => {
   const searchMap = {
     SEQUENCE: "Sequence",
@@ -119,21 +121,35 @@ const PredictionItem = ({
     NUCLEIC: "Nucleic Acid",
     LIGAND: "Ligand"
   }
+  
   const [item1SearchVals, setItem1SearchVals] = useState([])
   const [item2SearchVals, setItem2SearchVals] = useState([])
   const [item1SearchShow, setItem1SearchShow] = useState(false)
   const [item2SearchShow, setItem2SearchShow] = useState(false)
+  const [results, setResults] = useState(null)
+
+  if (status === 'pending' && jobid && !results) {
+    firebase.store.collection('jobs').doc(jobid.split('/')[1]).onSnapshot({next: (snap) => {
+      if (snap.get('status') === 'complete') {
+        const res = snap.get('result').map((r) => r.value)
+        setResults(res)
+      }
+    }, error: () => {}})
+  }
+
   return(
     <Card>
       <ListGroup>
         <ListGroup.Item>
-        <Container>
+          <Container>
+            <Row><Col><h3>Target</h3></Col></Row>
             <Row>
               <Col md={4}>
                 <DropdownButton
                   variant="outline-secondary"
                   title={"Input Type | "+searchMap[item1.search_type]}
                   id="input-group-dropdown-1"
+                  disabled={status !== 'ready'}
                 >
                   <Dropdown.Item onClick={() => {updateItem1Input('SEQUENCE')}}>Sequence</Dropdown.Item>
                   <Dropdown.Item onClick={() => {updateItem1Input('PDBCHAIN')}}>PDB ID</Dropdown.Item>
@@ -142,7 +158,8 @@ const PredictionItem = ({
                 <DropdownButton
                   variant="outline-secondary"
                   title={"Molecule Type | "+inputMap[item1.input_type]}
-                  id="input-group-dropdown-1"
+                  id="molecule-group-dropdown-1"
+                  disabled={status !== 'ready'}
                 >
                   <Dropdown.Item onClick={() => {updateItem1Molecule('PROTEIN')}}>Protein</Dropdown.Item>
                   <Dropdown.Item onClick={() => {updateItem1Molecule('NUCLEIC')}}>Nucleic Acid</Dropdown.Item>
@@ -158,13 +175,13 @@ const PredictionItem = ({
                             checked: !prediction.item1.checked
                           })
                         })
-                      )}} />
+                      )}} disabled={status !== 'ready'} />
                       <Form.Check.Label>Calculate for Invidual Residues</Form.Check.Label>
                     </Form.Check>
                     {
                       item1.search_type === 'PDBCHAIN' ?
                       <Dropdown show={item1SearchShow}>
-                        <Dropdown.Toggle as={PDBSearchBar} sequence={item1.sequence} text={item1.text} moltype={item1.input_type} editItemText={editItem1Text} editItemVals={(vals) => {setItem1SearchVals(vals); setItem1SearchShow(true)}} />
+                        <Dropdown.Toggle as={PDBSearchBar} disabled={status !== 'ready'} sequence={item1.sequence} text={item1.text} moltype={item1.input_type} editItemText={editItem1Text} editItemVals={(vals) => {setItem1SearchVals(vals); setItem1SearchShow(true)}} />
                         <Dropdown.Menu rootCloseEvent=''>
                           {item1SearchVals.map((result, index) => 
                             <Dropdown.Item eventKey={index} onClick={() => {
@@ -178,7 +195,7 @@ const PredictionItem = ({
                       </Dropdown> :
                       item1.search_type === 'SEARCH' ?
                       <Dropdown show={item1SearchShow}>
-                        <Dropdown.Toggle as={SearchBar} sequence={item1.sequence} text={item1.text} moltype={item1.input_type} editItemText={editItem1Text} editItemVals={(vals) => {setItem1SearchVals(vals); setItem1SearchShow(true)}} />
+                        <Dropdown.Toggle as={SearchBar} disabled={status !== 'ready'} sequence={item1.sequence} text={item1.text} moltype={item1.input_type} editItemText={editItem1Text} editItemVals={(vals) => {setItem1SearchVals(vals); setItem1SearchShow(true)}} />
                         <Dropdown.Menu rootCloseEvent=''>
                           {item1SearchVals.map((result, index) => 
                             <Dropdown.Item eventKey={index} onClick={() => {
@@ -191,7 +208,7 @@ const PredictionItem = ({
                         </Dropdown.Menu>
                       </Dropdown> :
                       <InputGroup>
-                        <Form.Control onChange={(e) => {editItem1Text(e.target.value)}} as="input" style={{fontFamily: "'Source Code Pro', monospace"}} value={item1.text} />
+                        <Form.Control onChange={(e) => {editItem1Text(e.target.value)}} disabled={status !== 'ready'} as="input" style={{fontFamily: "'Source Code Pro', monospace"}} value={item1.text} />
                         <InputGroup.Append>
                           <InputGroup.Text>
                           {
@@ -211,12 +228,14 @@ const PredictionItem = ({
         </ListGroup.Item>
         <ListGroup.Item>
           <Container>
+            <Row><Col><h3>Test</h3></Col></Row>
             <Row>
               <Col md={4}>
               <DropdownButton
                   variant="outline-secondary"
                   title={"Input Type | "+(item2.input_type === 'LIGAND' && item2.search_type == 'PDBCHAIN' ? 'PDB Chemical ID' : searchMap[item2.search_type])}
-                  id="input-group-dropdown-1"
+                  id="input-group-dropdown-2"
+                  disabled={status !== 'ready'}
                 >
                   <Dropdown.Item onClick={() => {updateItem2Input('SEQUENCE')}}>Sequence</Dropdown.Item>
                   {item2.input_type !== 'LIGAND' ? 
@@ -231,7 +250,8 @@ const PredictionItem = ({
                 <DropdownButton
                   variant="outline-secondary"
                   title={"Molecule Type | "+inputMap[item2.input_type]}
-                  id="input-group-dropdown-1"
+                  id="molecule-group-dropdown-2"
+                  disabled={status !== 'ready'}
                 >
                   <Dropdown.Item onClick={() => {updateItem2Molecule('PROTEIN')}}>Protein</Dropdown.Item>
                   <Dropdown.Item onClick={() => {updateItem2Molecule('NUCLEIC')}}>Nucleic Acid</Dropdown.Item>
@@ -248,13 +268,13 @@ const PredictionItem = ({
                             checked: !prediction.item2.checked
                           })
                         })
-                      )}} disabled={item2.search_type==='ALL' || !prediction.item1.checked} />
+                      )}} disabled={item2.search_type==='ALL' || !prediction.item1.checked || status !== 'ready'} />
                       <Form.Check.Label>Calculate for Invidual Residues</Form.Check.Label>
                     </Form.Check>
                     {
                       item2.search_type === 'PDBCHAIN' ?
                       <Dropdown show={item2SearchShow}>
-                        <Dropdown.Toggle as={PDBSearchBar} sequence={item2.sequence} text={item2.text} moltype={item2.input_type} editItemText={editItem2Text} editItemVals={(vals) => {console.log(vals); setItem2SearchVals(vals); setItem2SearchShow(true)}} />
+                        <Dropdown.Toggle as={PDBSearchBar} disabled={status !== 'ready'} sequence={item2.sequence} text={item2.text} moltype={item2.input_type} editItemText={editItem2Text} editItemVals={(vals) => {setItem2SearchVals(vals); setItem2SearchShow(true)}} />
                         <Dropdown.Menu rootCloseEvent=''>
                           {item2SearchVals.map((result, index) => 
                             <Dropdown.Item eventKey={index} onClick={() => {
@@ -268,7 +288,7 @@ const PredictionItem = ({
                       </Dropdown> :
                       item2.search_type === 'SEARCH' ?
                       <Dropdown show={item2SearchShow}>
-                        <Dropdown.Toggle as={SearchBar} sequence={item2.sequence} text={item2.text} moltype={item2.input_type} editItemText={editItem2Text} editItemVals={(vals) => {console.log(vals); setItem2SearchVals(vals); setItem2SearchShow(true)}} />
+                        <Dropdown.Toggle as={SearchBar} disabled={status !== 'ready'} sequence={item2.sequence} text={item2.text} moltype={item2.input_type} editItemText={editItem2Text} editItemVals={(vals) => {setItem2SearchVals(vals); setItem2SearchShow(true)}} />
                         <Dropdown.Menu rootCloseEvent=''>
                           {item2SearchVals.map((result, index) => 
                             <Dropdown.Item eventKey={index} onClick={() => {
@@ -281,7 +301,7 @@ const PredictionItem = ({
                         </Dropdown.Menu>
                       </Dropdown> :
                       <InputGroup>
-                        <Form.Control onChange={(e) => {editItem2Text(e.target.value)}} as="input" style={{fontFamily: "'Source Code Pro', monospace"}} value={item2.text} disabled={item2.search_type==='ALL'} />
+                        <Form.Control onChange={(e) => {editItem2Text(e.target.value)}} as="input" style={{fontFamily: "'Source Code Pro', monospace"}} value={item2.text} disabled={item2.search_type==='ALL' || status !== 'ready'} />
                         <InputGroup.Append>
                           <InputGroup.Text>
                           {
@@ -302,6 +322,10 @@ const PredictionItem = ({
         <ListGroup.Item>
           <Container>
             {
+              results ?
+              <Row>
+                <Col><ResultBox results={results} id1={item1.sequence} id2={item2.sequence} /></Col>
+              </Row> :
               status === 'ready' ?
               <Row>
                 <Col md={6}>
@@ -312,7 +336,8 @@ const PredictionItem = ({
                 </Col>
               </Row> :
               <Row>
-                <Col md={{span: 4, offset: 4}}><h1>{status ? status.toUpperCase() : null}</h1></Col>
+                <Col md={'auto'}><Spinner style={{float: 'left'}} animation="grow" /></Col>
+                <Col><h1>{status ? status.toUpperCase() : null}</h1></Col>
               </Row>
             }
           </Container>
@@ -322,7 +347,7 @@ const PredictionItem = ({
   )
 }
 
-const InputItems = ({ firebase, items, editInput, editMolecule, editPrediction, editText, editSequence, addItem, removeItem, predictOne, predictAll }) => {
+const InputItems = ({ firebase, items, editInput, editMolecule, editPrediction, editText, editSequence, addItem, removeItem, predictOne, predictAll, predictOnePrep, predictAllPrep }) => {
   return(
     <Jumbotron>
       {items.map((item, index) => (
@@ -332,6 +357,7 @@ const InputItems = ({ firebase, items, editInput, editMolecule, editPrediction, 
           item1={item.item1}
           item2={item.item2}
           status={item.state}
+          jobid={item.jobid}
           prediction={item.prediction}
           updateItem1Input={(typ) => {editInput(index, 0, typ)}}
           updateItem1Molecule={(typ) => {editMolecule(index, 0, typ)}}
@@ -342,17 +368,19 @@ const InputItems = ({ firebase, items, editInput, editMolecule, editPrediction, 
           editItem2Text={(text) => {editText(index,1,text)}}
           editItem2Sequence={(text) => {editSequence(index,1,text)}}
           updatePrediction={(pred) => {editPrediction(index, pred)}}
-          predict={() => predictOne(firebase.auth.currentUser, index, item)}
+          predict={() => {predictOnePrep(index); predictOne(firebase.auth.currentUser, index, item)}}
           remove={() => removeItem(index)}
+          firebase={firebase}
         />
       ))}
       <Container style={{padding: "20px 0 0 0"}}>
         <Row>
           <Col md={6}>
             <Button size="lg" onClick={() => {
+              predictAllPrep()
               predictAll(firebase.auth.currentUser, items)
             }} disabled={
-              !items.every((item) => ((item.state === 'ready' && (item.item1.sequence.length > 0 && (item.item2.sequence.length > 0 || item.item2.search_type === 'ALL')))) || (item !== 'ready'))
+              !items.every((item) => (item.state === 'ready' && (item.item1.sequence.length > 0 && (item.item2.sequence.length > 0 || item.item2.search_type === 'ALL')) || item.state !== 'ready')) || items.every((item) => (item.state !== 'ready'))
             } block>Predict All</Button>
           </Col>
           <Col md={6}>
@@ -364,9 +392,9 @@ const InputItems = ({ firebase, items, editInput, editMolecule, editPrediction, 
   )
 }
 
-const InputsFirebase = ({ items, editInput, editMolecule, editPrediction, editText, editSequence, addItem, removeItem, predictOne, predictAll }) => {
+const InputsFirebase = ({ items, editInput, editMolecule, editPrediction, editText, editSequence, addItem, removeItem, predictOne, predictAll, predictOnePrep, predictAllPrep }) => {
   return(
-    withFirebase(InputItems)({ items, editInput, editMolecule, editPrediction, editText, editSequence, addItem, removeItem, predictOne, predictAll })
+    withFirebase(InputItems)({ items, editInput, editMolecule, editPrediction, editText, editSequence, addItem, removeItem, predictOne, predictAll, predictOnePrep, predictAllPrep })
   )
 }
 

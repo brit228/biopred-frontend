@@ -2,7 +2,7 @@ import React, { useRef } from 'react'
 import { Modal, Form, Button } from 'react-bootstrap'
 import { withFirebase } from './Firebase'
 
-const CompleteModal = ({ firebase, showComplete, checkUserComplete }) => {
+const CompleteModal = ({ firebase, showComplete, checkUserComplete, userCompleted }) => {
   const userTypeRef = useRef(null)
   return (
     <Modal
@@ -39,6 +39,10 @@ const CompleteModal = ({ firebase, showComplete, checkUserComplete }) => {
             headers: {
               'Content-Type': 'application/json',
             }
+          }).then(res => res.text()).then(data => {
+            if (data === "SUCCESS") {
+              userCompleted()
+            }
           })
         }}>
           Submit
@@ -48,9 +52,9 @@ const CompleteModal = ({ firebase, showComplete, checkUserComplete }) => {
   )
 }
 
-const CompleteForm = ({ userComplete, hide, checkUserComplete }) => {
+const CompleteForm = ({ userComplete, hide, checkUserComplete, userCompleted }) => {
   return(
-    withFirebase(CompleteModal)({ showComplete: userComplete, closeHandle: hide, checkUserComplete })
+    withFirebase(CompleteModal)({ showComplete: userComplete, closeHandle: hide, checkUserComplete, userCompleted })
   )
 }
 

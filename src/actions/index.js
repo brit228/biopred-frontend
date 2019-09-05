@@ -61,7 +61,7 @@ export const predictItemsJob = () => ({
   jobid
 })
 
-export const predictItemJob = (id) => ({
+export const predictItemJob = (id, jobid) => ({
   type: 'PREDICT_ITEM_JOB',
   id,
   jobid
