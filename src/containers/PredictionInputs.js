@@ -22,7 +22,7 @@ const mapDispatchToProps = dispatch => {
     editPrediction: (id, pred) => {dispatch(editItemPrediction(id, pred))},
     predictAll: (currentUser, items) => {
       dispatch(predictItems())
-      fetch("http://127.0.0.1:5000/graph", {
+      fetch("http://api.biopred.app/graph", {
         method: 'POST',
         mode: 'cors',
         headers: {
@@ -54,7 +54,7 @@ const mapDispatchToProps = dispatch => {
     },
     predictOne: (currentUser, id, item) => {
       dispatch(predictItem(id))
-      fetch("http://127.0.0.1:5000/graph", {
+      fetch("https://api.biopred.app/graph", {
         method: 'POST',
         mode: 'cors',
         headers: {
