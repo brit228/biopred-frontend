@@ -1,9 +1,7 @@
 import React, {Component} from 'react'
-import {Container, Jumbotron} from 'react-bootstrap'
+import {Container, Jumbotron, Row} from 'react-bootstrap'
 
 import Navbar from '../containers/NavbarAuth'
-import SignInUI from '../containers/SigninUI'
-import CompleteForm from '../containers/CompleteForm'
 import BackgroundAnimation from '../containers/BackgroundAnimation'
 
 class HomePage extends Component {
@@ -13,10 +11,8 @@ class HomePage extends Component {
         <Navbar />,
         <Container>
           <Jumbotron style={{margin: '30px 0'}}>
-            <h1 className='display-2'>BioPred</h1>
-            <h3 style={{fontFamily: "'Ubuntu', serif"}}><i>predictive web tools for determining interactions between biomolecules</i></h3>
-            <SignInUI />
-            <CompleteForm />
+            <h1 className='display-2'>History</h1>
+            <h3 style={{fontFamily: "'Ubuntu', serif"}}><i>previous predictive results for different combinations of settings</i></h3>
           </Jumbotron>
         </Container>,
         <BackgroundAnimation />

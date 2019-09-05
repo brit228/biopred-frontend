@@ -59,7 +59,6 @@ const NavbarComponent = ({ firebase, showUI, userComplete, userCompleted, checkU
               {authUser && userComplete ?
                 [
                   <Nav.Link href="/predict">Predict</Nav.Link>,
-                  <Nav.Link href="/generate">Generate</Nav.Link>,
                   <Nav.Link href="/profile">Profile</Nav.Link>
                 ] : null }
             </Nav>

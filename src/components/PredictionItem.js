@@ -262,13 +262,13 @@ const PredictionItem = ({
                 <Form>
                   <Form.Group controlId="formPredictionInput">
                     <Form.Check type='checkbox' id={`form-checkbox-${id}-2`}>
-                    <Form.Check.Input type='checkbox' checked={prediction.item2.checked && (prediction.item1.checked || !item2.search_type==='ALL')} onClick={(e) => {updatePrediction(
+                    <Form.Check.Input type='checkbox' checked={prediction.item2.checked && (item2.input_type !== 'LIGAND' && prediction.item1.checked || !item2.search_type==='ALL')} onClick={(e) => {updatePrediction(
                         Object.assign({}, prediction, {
                           item2: Object.assign({}, prediction.item2, {
                             checked: !prediction.item2.checked
                           })
                         })
-                      )}} disabled={item2.search_type==='ALL' || !prediction.item1.checked || status !== 'ready'} />
+                      )}} disabled={item2.input_type === 'LIGAND' || item2.search_type==='ALL' || !prediction.item1.checked || status !== 'ready'} />
                       <Form.Check.Label>Calculate for Invidual Residues</Form.Check.Label>
                     </Form.Check>
                     {
@@ -324,7 +324,7 @@ const PredictionItem = ({
             {
               results ?
               <Row>
-                <Col><ResultBox results={results} id1={item1.sequence} id2={item2.sequence} /></Col>
+                <Col><ResultBox results={results} id1={item1.sequence} id2={item2.sequence !== '' ? item2.sequence : 'ALL'} /></Col>
               </Row> :
               status === 'ready' ?
               <Row>
