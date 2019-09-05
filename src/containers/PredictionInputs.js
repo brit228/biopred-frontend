@@ -40,8 +40,8 @@ const mapDispatchToProps = dispatch => {
               searchType: item.item2.search_type,
               itemType:item.item2.item_type
             },
-            predSubSeqItem1: item.predictions.item1.checked,
-            predSubSeqItem2: item.predictions.item2.checked
+            predSubSeqItem1: item.prediction.item1.checked,
+            predSubSeqItem2: item.prediction.item2.checked
           })))+'})}',
           authentication: {
             accessToken: currentUser.c.b,
@@ -72,8 +72,8 @@ const mapDispatchToProps = dispatch => {
               searchType: item.item2.search_type,
               itemType:item.item2.item_type
             },
-            predSubSeqItem1: item.predictions.item1.checked,
-            predSubSeqItem2: item.predictions.item2.checked
+            predSubSeqItem1: item.prediction.item1.checked,
+            predSubSeqItem2: item.prediction.item2.checked
           }])+'})}',
           authentication: {
             accessToken: currentUser.c.b,

@@ -352,7 +352,7 @@ const InputItems = ({ firebase, items, editInput, editMolecule, editPrediction, 
             <Button size="lg" onClick={() => {
               predictAll(firebase.auth.currentUser, items)
             }} disabled={
-              !items.every((item) => (item.item1.sequence.length > 0 && (item.item2.sequence.length > 0 || item.item2.search_type === 'ALL')))
+              !items.every((item) => ((item.state === 'ready' && (item.item1.sequence.length > 0 && (item.item2.sequence.length > 0 || item.item2.search_type === 'ALL')))) || (item !== 'ready'))
             } block>Predict All</Button>
           </Col>
           <Col md={6}>
