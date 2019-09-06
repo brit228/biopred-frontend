@@ -15,7 +15,7 @@ class PredictPage extends Component {
         <Container>
           <Jumbotron style={{margin: '30px 0'}}>
             <h1 className='display-2'>Predict</h1>
-            <h3 style={{fontFamily: "'Ubuntu', serif"}}><i>predict likelihood of interaction for different biomolecules and settings</i></h3>
+            <h3 style={{fontFamily: "'Ubuntu', serif"}}><i>predicts likelihood of interaction for different biomolecules and settings</i></h3>
             <SignInUI />
             <CompleteForm />
           </Jumbotron>

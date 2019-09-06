@@ -11,16 +11,26 @@ const NavbarComponent = ({ firebase, showUI, userComplete, userCompleted, checkU
     firebase.auth.onAuthStateChanged(
       auth => {
         auth ? setAuth(auth) : setAuth(null)
-        if (auth && !userComplete) {
-          firebase.store.collection('users').where('uid', '==', auth.uid).get().then((q) => {
-            checkUserCompleted()
-            if (q.docs.length > 0) {
-              userCompleted()
-            }
-          })
-        }
       }
     )
+    if (firebase.auth.currentUser && !userComplete) {
+      fetch('https://api.biopred.app/', {
+        mode: 'cors',
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          uid: firebase.auth.currentUser.uid,
+          accessToken: firebase.auth.currentUser.c.b
+        })
+      }).then(res => res.json()).then(data => {
+        checkUserCompleted()
+        if (data.limit > 0)  {
+          userCompleted(data.limit)
+        }
+      })
+    }
   })
 
   return(

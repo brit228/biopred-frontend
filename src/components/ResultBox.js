@@ -35,19 +35,27 @@ const ResultBox = ({ id1, id2, results}) => {
       if (results[0].length > 1) {
         const l1 = results.length
         const l2 = results[0].length
-        const cw = w / l2
-        svg.attr("height", cw * l1)
-        nodeRect1.attr("x", (d,i) => d.x*cw+1).attr("width", cw-2).attr("height", cw-2)
+        const cw = (w-40) / 50
+        svg.attr("height", (cw*l1+20) * (Math.floor(l2 / 50)+1)+20)
+        nodeRect1.attr("x", (d,i) => (d.x%50)*cw+1).attr("y", (d,i) => (l1*cw+20)*Math.floor(d.x/50)+d.y*cw+21).attr("width", cw-2).attr("height", cw-2)
+        nodeText1.attr("y", (d,i) => (l1*cw+20)*d+17)
       } else {
+        w = w-40
         nodeRect1.attr("width", (d,i) => d[0]*w)
         nodeRect2.attr("x", (d,i) => d[0]*w).attr("width", (d,i) => w-d[0]*w)
         nodeText1.attr("x", w-70)
       }
     } else {
+      w = w-40
       nodeRect1.attr("width", (d,i) => d*w)
       nodeRect2.attr("x", (d,i) => d*w).attr("width", (d,i) => w-d*w)
       nodeText1.attr("x", w-100)
     }
+    div.style("opacity", 0.0).style("top",0.0)
+  }
+
+  function range(start, end) {
+    return (new Array(end - start)).fill(undefined).map((_, i) => i + start);
   }
   
   useEffect(() => {
@@ -57,21 +65,25 @@ const ResultBox = ({ id1, id2, results}) => {
         if (results[0].length > 1) {
           const l1 = results.length
           const l2 = results[0].length
-          const cw = w / l2
+          const cw = (w-40) / 50
           const vals = []
           results.map((r,i) => {r.map((c,j) => {vals.push({y: i, x: j, v: c})})})
-          svg = d3.select(svgDivRef.current).append("svg").attr("width", w).attr("height", cw * l1)
-          div = d3.select("body").append("div").style("opacity", 0).style('position', 'absolute').style('padding', '2px').style('width', '250px').style('height', '75px').style('font-family', "'Source Code Pro', monospace").style('background', 'lightsteelblue').style('border-radius', '8px')
+          svg = d3.select(svgDivRef.current).append("svg").attr("width", w).attr("height", (cw*l1+20) * (Math.floor(l2 / 50)+1)+20)
+          div = d3.select("body").append("div").style("opacity", 0).style('position', 'absolute').style('padding', '2px').style('width', '300px').style('height', '75px').style('font-family', "'Source Code Pro', monospace").style('background', 'lightsteelblue').style('border-radius', '8px')
           nodeRect1 = svg.selectAll("rect1").data(vals).enter().append("g").classed('rect1', true)
-          nodeRect1.append("rect").attr("x", (d,i) => d.x*cw+1).attr("y", (d,i) => d.y*cw+1).attr("width", cw-2).attr("height", cw-2).attr("fill", (d,i) => colorFunc(d.v)).on("mouseover", function(d) {
+          nodeRect1.append("rect").attr("x", (d,i) => (d.x%50)*cw+1).attr("y", (d,i) => (l1*cw+20)*Math.floor(d.x/50)+d.y*cw+21).attr("width", cw-2).attr("height", cw-2).attr("fill", (d,i) => colorFunc(d.v)).on("mouseover", function(d) {
               div.transition()		
                 .duration(200)
                 .style("opacity", 1.0)
-              div.html(`Index: ${d.x} | ${d.y}<br/>Sequence: ${id1.slice(Math.max(0,d.y-3),d.y)}<b>${id1[d.y]}</b>${id1.slice(d.y+1,Math.min(id1.length,d.y+3))} | ${id2.slice(Math.max(0,d.x-3),d.x)}<b>${id2[d.x]}</b>${id2.slice(d.x+1,Math.min(id2.length,d.x+3))}<br/>Value: ${d.v.toFixed(3)}`)	
+              div.html(`Index: ${d.x+1} | ${d.y+1}<br/>Sequence: ${id1.slice(Math.max(0,d.y-3),d.y)}<b>${id1[d.y]}</b>${id1.slice(d.y+1,Math.min(id1.length,d.y+4))} | ${id2.slice(Math.max(0,d.x-3),d.x)}<b>${id2[d.x]}</b>${id2.slice(d.x+1,Math.min(id2.length,d.x+4))}<br/>Value: ${d.v.toFixed(3)}`)	
                 .style("left", (d3.event.pageX) + "px")		
                 .style("top", (d3.event.pageY - 28) + "px")
             })
+          nodeText1 = svg.selectAll("text1").data(range(0,Math.floor(l2/50)+1)).enter().append("g").classed('text1', true)
+          nodeText1.append("text").attr("x", 10).attr("y", (d,i) => (l1*cw+20)*d+17).attr("font-size", 20).attr("font-family", "'Source Code Pro', monospace").text((d,i) => (d*50+1).toString())
+
         } else {
+          w = w-40
           const l1 = results.length
           svg = d3.select(svgDivRef.current).append("svg").attr("width", w).attr("height", 30 * l1)
           nodeRect1 = svg.selectAll("rect1").data(results).enter().append("g").classed('rect1', true)
@@ -84,6 +96,7 @@ const ResultBox = ({ id1, id2, results}) => {
           nodeText2.append("text").attr("x", 20).attr("y", (d,i) => (i+1)*30-8).attr("font-size", 20).attr("font-family", "'Source Code Pro', monospace").text((d,i) => id1[i])
         }
       } else {
+        w = w-40
         svg = d3.select(svgDivRef.current).append("svg").attr("width", w).attr("height", 50)
         nodeRect1 = svg.selectAll("rect1").data(results[0]).enter().append("g").classed('rect1', true)
         nodeRect1.append("rect").attr("x", 0).attr("y", 0).attr("width", (d,i) => d*w).attr("height", 50).attr("fill", (d,i) => colorFunc(d))
@@ -101,8 +114,8 @@ const ResultBox = ({ id1, id2, results}) => {
           <Accordion.Toggle ref={headerRef} as={Card.Header} eventKey="0" style={{float: 'left'}} onClick={() => {updateSvg()}}>
             <h3 style={{fontFamily: '"Source Code Pro", monospace'}}>{id1.slice(0,20)+(id1.length > 20 ? '...' : '')} | {id2.slice(0,20)+(id2.length > 20 ? '...' : '')}</h3>
           </Accordion.Toggle>
-          <Accordion.Collapse eventKey="0" as={Card.Body}>
-            <div ref={svgDivRef} style={{width: '100%'}}></div>
+          <Accordion.Collapse eventKey="0">
+            <Card.Body><div ref={svgDivRef} style={{width: '100%'}}></div></Card.Body>
           </Accordion.Collapse>
         </Card>
       </Accordion>

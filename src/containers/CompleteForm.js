@@ -1,6 +1,6 @@
 import { connect } from 'react-redux'
 import CompleteModal from '../components/CompleteModal'
-import { hideUI } from '../actions/index'
+import { hideUI, userCompleted } from '../actions/index'
 
 const mapStateToProps = state => {
   return {
@@ -11,7 +11,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    hide: () => {dispatch(hideUI())}
+    hide: () => {dispatch(hideUI())},
+    userCompleted: (limit) => {dispatch(userCompleted(limit))}
   }
 }
 

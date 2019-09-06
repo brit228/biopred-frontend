@@ -77,7 +77,8 @@ const predictOne = (payload) => {
 
 const mapStateToProps = state => {
   return {
-    items: state.items
+    items: state.items,
+    limit: state.profile.limit
   }
 }
 

@@ -80,8 +80,9 @@ export const showUI = () => ({
   type: "SHOW_UI"
 })
 
-export const userCompleted = () => ({
-  type: "USER_COMPLETE"
+export const userCompleted = (limit) => ({
+  type: "USER_COMPLETE",
+  limit
 })
 
 export const userCompletedCancel = () => ({

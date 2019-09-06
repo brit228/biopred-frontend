@@ -1,6 +1,7 @@
 import { connect } from 'react-redux'
+
 import FirebaseUI from '../components/FirebaseUI'
-import { hideUI, userCompleted } from '../actions/index'
+import { hideUI } from '../actions/index'
 
 const mapStateToProps = state => {
   return {
@@ -11,7 +12,6 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     closeUI: () => {dispatch(hideUI())},
-    userCompleted: () => {dispatch(userCompleted())}
   }
 }
 

@@ -1,7 +1,8 @@
 const initialState = {
   showUI: false,
   userComplete: false,
-  checkUserComplete: false
+  checkUserComplete: false,
+  limit: 0
 }
 
 const profile = (state=initialState, action) => {
@@ -16,7 +17,8 @@ const profile = (state=initialState, action) => {
       })
     case "USER_COMPLETE":
       return Object.assign({}, state, {
-        userComplete: true
+        userComplete: true,
+        limit: action.limit
       })
     case "USER_NOT_COMPLETE":
       return Object.assign({}, state, {

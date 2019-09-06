@@ -1,6 +1,6 @@
 import React, {useState} from 'react'
 import { parseString } from 'xml2js'
-import { Card, Container, Row, Col, Form, ListGroup, DropdownButton, Dropdown, Button, Jumbotron, InputGroup, Spinner } from 'react-bootstrap'
+import { Card, Container, Row, Col, Form, ListGroup, DropdownButton, Dropdown, Button, Jumbotron, InputGroup, Spinner, ProgressBar } from 'react-bootstrap'
 import { FaCheck, FaTimes } from 'react-icons/fa'
 import { withFirebase } from './Firebase'
 
@@ -8,7 +8,7 @@ import ResultBox from './ResultBox'
 
 const SearchBar = ({ disabled, text, moltype, sequence, editItemText, editItemVals }) => (
   <InputGroup>
-    <Form.Control disabled={siabled} onChange={(e) => {
+    <Form.Control disabled={disabled} onChange={(e) => {
       editItemText(e.target.value)
       fetch('https://www.rcsb.org/pdb/rest/search', {
         method: 'POST',
@@ -347,9 +347,19 @@ const PredictionItem = ({
   )
 }
 
-const InputItems = ({ firebase, items, editInput, editMolecule, editPrediction, editText, editSequence, addItem, removeItem, predictOne, predictAll, predictOnePrep, predictAllPrep }) => {
+const InputItems = ({ firebase, items, limit, editInput, editMolecule, editPrediction, editText, editSequence, addItem, removeItem, predictOne, predictAll, predictOnePrep, predictAllPrep }) => {
   return(
     <Jumbotron>
+      <Container style={{padding: "0 0 20px 0"}}>
+        <Row>
+          <Col md={2}>
+            <h4>Limit of Predictions</h4>
+          </Col>
+          <Col>
+            <ProgressBar now={limit} label={`${limit}`} max={1000} min={0} style={{height: "80%"}} />
+          </Col>
+        </Row>
+      </Container>
       {items.map((item, index) => (
         <PredictionItem
           key={index} 
@@ -392,9 +402,9 @@ const InputItems = ({ firebase, items, editInput, editMolecule, editPrediction, 
   )
 }
 
-const InputsFirebase = ({ items, editInput, editMolecule, editPrediction, editText, editSequence, addItem, removeItem, predictOne, predictAll, predictOnePrep, predictAllPrep }) => {
+const InputsFirebase = ({ items, limit, editInput, editMolecule, editPrediction, editText, editSequence, addItem, removeItem, predictOne, predictAll, predictOnePrep, predictAllPrep }) => {
   return(
-    withFirebase(InputItems)({ items, editInput, editMolecule, editPrediction, editText, editSequence, addItem, removeItem, predictOne, predictAll, predictOnePrep, predictAllPrep })
+    withFirebase(InputItems)({ items, limit, editInput, editMolecule, editPrediction, editText, editSequence, addItem, removeItem, predictOne, predictAll, predictOnePrep, predictAllPrep })
   )
 }
 

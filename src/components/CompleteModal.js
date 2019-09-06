@@ -1,8 +1,9 @@
 import React, { useRef } from 'react'
 import { Modal, Form, Button } from 'react-bootstrap'
+import { withRouter } from 'react-router-dom'
 import { withFirebase } from './Firebase'
 
-const CompleteModal = ({ firebase, showComplete, checkUserComplete, userCompleted }) => {
+const CompleteModal = ({ firebase, history, showComplete, checkUserComplete, userCompleted }) => {
   const userTypeRef = useRef(null)
   return (
     <Modal
@@ -40,8 +41,9 @@ const CompleteModal = ({ firebase, showComplete, checkUserComplete, userComplete
               'Content-Type': 'application/json',
             }
           }).then(res => res.text()).then(data => {
-            if (data === "SUCCESS") {
-              userCompleted()
+            if (data.slice(0,8) === "SUCCESS") {
+              userCompleted(1000)
+              history.push('/')
             }
           })
         }}>
@@ -58,4 +60,4 @@ const CompleteForm = ({ userComplete, hide, checkUserComplete, userCompleted }) 
   )
 }
 
-export default CompleteForm
+export default withRouter(CompleteForm)

@@ -11,7 +11,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     showUI: () => {dispatch(showUI())},
-    userCompleted: () => {dispatch(userCompleted())},
+    userCompleted: (limit) => {dispatch(userCompleted(limit))},
     checkUserCompleted: () => {dispatch(checkUserCompleted())}
   }
 }
