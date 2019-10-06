@@ -37,7 +37,7 @@ const CompleteModal = ({ firebase, history, showComplete, checkUserComplete, use
               'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-              query: "query {completeRegistration}",
+              query: `query {completeRegistration(typ: "${userTypeRef.current.value}")}`,
               authentication: {
                 uid: firebase.auth.currentUser.uid,
                 accessToken: firebase.auth.currentUser.c.b
