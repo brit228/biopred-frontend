@@ -33,6 +33,9 @@ const CompleteModal = ({ firebase, history, showComplete, checkUserComplete, use
           fetch("https://api.biopred.app/graph", {
             method: 'POST',
             mode: 'cors',
+            headers: {
+              'Content-Type': 'application/json'
+            },
             body: JSON.stringify({
               query: "query {completeRegistration}",
               authentication: {
