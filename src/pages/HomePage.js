@@ -13,7 +13,7 @@ class HomePage extends Component {
         <Navbar />,
         <Container>
           <Jumbotron style={{margin: '30px 0'}}>
-            <h1 className='display-2'>BioPred</h1>
+            <h1 className='display-3'>BioPred</h1>
             <h3 style={{fontFamily: "'Ubuntu', serif"}}><i>predictive web tools for determining interactions between biomolecules</i></h3>
             <SignInUI />
             <CompleteForm />

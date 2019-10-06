@@ -30,17 +30,18 @@ const CompleteModal = ({ firebase, history, showComplete, checkUserComplete, use
           </Form.Group>
         </Form>
         <Button variant="outline-secondary" type="submit" onClick={() => {
-          fetch("https://api.biopred.app/complete", {
+          fetch("https://api.biopred.app/graph", {
             method: 'POST',
             mode: 'cors',
             body: JSON.stringify({
-              uid: firebase.auth.currentUser.uid,
-              typ: userTypeRef.current.value
-            }),
-            headers: {
-              'Content-Type': 'application/json',
-            }
+              query: "query {completeRegistration}",
+              authentication: {
+                uid: firebase.auth.currentUser.uid,
+                accessToken: firebase.auth.currentUser.c.b
+              }
+            })
           }).then(res => res.text()).then(data => {
+            console.log(data)
             if (data.slice(0,8) === "SUCCESS") {
               userCompleted(1000)
               history.push('/')

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Container, Navbar, Nav } from 'react-bootstrap'
+import { Button, Container, Navbar, Nav, NavDropdown } from 'react-bootstrap'
 import { withFirebase } from './Firebase'
 
 import logo from '../resources/logo.png'
@@ -14,20 +14,23 @@ const NavbarComponent = ({ firebase, showUI, userComplete, userCompleted, checkU
       }
     )
     if (firebase.auth.currentUser && !userComplete) {
-      fetch('https://api.biopred.app/', {
+      fetch('https://api.biopred.app/graph', {
         mode: 'cors',
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          uid: firebase.auth.currentUser.uid,
-          accessToken: firebase.auth.currentUser.c.b
+          query: "query {checkIn}",
+          authentication: {
+            uid: firebase.auth.currentUser.uid,
+            accessToken: firebase.auth.currentUser.c.b
+          }
         })
       }).then(res => res.json()).then(data => {
         checkUserCompleted()
-        if (data.limit > 0)  {
-          userCompleted(data.limit)
+        if (data.data.checkIn > 0)  {
+          userCompleted(data.data.checkIn)
         }
       })
     }
@@ -65,10 +68,11 @@ const NavbarComponent = ({ firebase, showUI, userComplete, userCompleted, checkU
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="mr-auto">
               <Nav.Link href="/about">About</Nav.Link>
-              <Nav.Link href="/history">History</Nav.Link>
               {authUser && userComplete ?
                 [
-                  <Nav.Link href="/predict">Predict</Nav.Link>,
+                  <NavDropdown title="Predict" id="predict-dropdown">
+                    <NavDropdown.Item href="/predict/rnaprotein" style={{whiteSpace: "normal"}}>RNA-Protein Interaction</NavDropdown.Item>
+                  </NavDropdown>,
                   <Nav.Link href="/profile">Profile</Nav.Link>
                 ] : null }
             </Nav>

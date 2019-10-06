@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "bootstrap": "^4.3.1",
-    "d3": "^5.11.0",
     "firebase": "^6.4.2",
     "react": "^16.9.0",
     "react-bootstrap": "^1.0.0-beta.11",
@@ -25,8 +24,7 @@
     "react-router-dom": "^5.0.1",
     "redux": "^4.0.4",
     "redux-thunk": "^2.3.0",
-    "webpack": "^4.39.2",
-    "xml2js": "^0.4.22"
+    "webpack": "^4.39.2"
   },
   "devDependencies": {
     "dotenv": "^8.1.0",

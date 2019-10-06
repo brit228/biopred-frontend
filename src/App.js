@@ -1,15 +1,15 @@
 import React, {Component} from 'react'
-import {BrowserRouter, Route, Redirect} from 'react-router-dom'
+import {BrowserRouter, Route, Redirect, Switch} from 'react-router-dom'
 
 import HomePage from './pages/HomePage'
 import AboutPage from './pages/AboutPage'
 import AccountPage from './pages/AccountPage'
-import PredictPage from './pages/PredictPage'
-import HistoryPage from './pages/HistoryPage'
+import RNAProteinPage from './pages/Predictions/RNAProteinPage'
 
 import { withFirebase } from './components/Firebase'
 
 import './App.css'
+
 
 
 class App extends Component {
@@ -31,11 +31,19 @@ class App extends Component {
 
   render() {
     return <BrowserRouter>
-      <Route path="/" exact component={() => <HomePage />} />
-      <Route path="/about" component={() => <AboutPage />} />
-      <Route path="/history" component={() => <HistoryPage />} />
-      <Route path="/profile" component={() => (!this.state.authChecked ? null : this.state.authUser ? <AccountPage /> : <Redirect to="/" />)} />
-      <Route path="/predict" component={() => (!this.state.authChecked ? null : this.state.authUser ? <PredictPage /> : <Redirect to="/" />)} />
+      <Switch>
+        <Route exact path="/" render={() => <HomePage />} />
+        <Route path="/about" render={() => <AboutPage />} />
+        <Route path="/profile" render={() => (!this.state.authChecked ? null : this.state.authUser ? <AccountPage /> : <Redirect to="/" />)} />
+        <Route path="/predict" render={routeProps => {
+          return !this.state.authChecked ? null : this.state.authUser ? (
+            routeProps.location.pathname === '/predict/rnaprotein' ?
+          <RNAProteinPage /> :
+          <Redirect to="/" />
+        ) : 
+        <Redirect to="/" />}} />
+        <Redirect to="/" />
+      </Switch>
     </BrowserRouter>
   }
 }
