@@ -153,7 +153,7 @@ const JobRow = ({ jobname, datetime, sequence, pending, results }) => {
         <td><Button disabled={pending} onClick={() => {setOpen(!open)}}>{pending ? <Spinner animation="border" size="sm" /> : <FaChevronDown />}</Button></td>
       </tr>,
       <tr>
-        <td colSpan={4} style={{paddingTop: "0", paddingBottom: "0"}}>
+        <td colSpan={3} style={{paddingTop: "0", paddingBottom: "0", maxWidth: "1000px"}}>
           <Collapse in={open} open>
             <Container>
               <Row>
@@ -168,7 +168,7 @@ const JobRow = ({ jobname, datetime, sequence, pending, results }) => {
                 <Col md={6}>
                   <p><code>{results.map((r,i) => (r.interaction > 0.5 ? <b>{sequence[i]}</b> : sequence[i]))}</code></p>
                   <p><code>{results.map((r,i) => (r.interaction > 0.5 ? <b>1</b> : '0'))}</code></p>
-                  <div ref={chartRef} style={{width: "90%"}}></div>
+                  <div ref={chartRef} style={{width: "100%"}}></div>
                 </Col>
               </Row>
             </Container>
@@ -278,25 +278,29 @@ const RNAProteinPrediction = ({ firebase, limit }) => {
       </Row>
     </Jumbotron>,
     <Jumbotron>
+      <Container>
       <Row>
         <Col>
           <h4>Your Jobs</h4>
         </Col>
       </Row>
       <Row>
-        <Table bordered hover style={{width:"100%"}}>
-          <thead>
-            <tr>
-              <th>Job Name</th>
-              <th>Time/Date Submitted</th>
-              <th>View</th>
-            </tr>
-          </thead>
-          <tbody>
-            {jobs ? jobs.map(j => <JobRow results={j.result} jobname={j.jobname} datetime={j.timestamp} pending={j.status === 'completed'} sequence={j.sequence} />) : null}
-          </tbody>                
-        </Table>
+        <Col>
+          <Table bordered hover style={{width:"100%"}}>
+            <thead>
+              <tr>
+                <th>Job Name</th>
+                <th>Time/Date Submitted</th>
+                <th>View</th>
+              </tr>
+            </thead>
+            <tbody>
+              {jobs ? jobs.map(j => <JobRow results={j.result} jobname={j.jobname} datetime={j.timestamp} pending={j.status === 'completed'} sequence={j.sequence} />) : null}
+            </tbody>                
+          </Table>
+        </Col>
       </Row>
+      </Container>
     </Jumbotron>
   ]
 }
