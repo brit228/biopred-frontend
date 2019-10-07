@@ -3,6 +3,40 @@ import {Container, Jumbotron, Row, Col, InputGroup, FormControl, Button, Form, S
 import { FaChevronDown } from 'react-icons/fa'
 import { withFirebase } from '../Firebase'
 
+const sleep = (milliseconds) => {
+  return new Promise(resolve => setTimeout(resolve, milliseconds))
+}
+
+const getResults = async (setJobs, key, uid) => {
+  await sleep(10000)
+  fetch('https://api.biopred.app/graph', {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({query: `query {
+      myRnaProteinPredictions {
+          sequence
+          result {
+            resabbrev
+            interaction
+          }
+          jobname
+          timestamp
+          status
+        }
+      }`,
+      authentication: {
+        uid: uid,
+        accessToken: key
+    }}),
+  }).then(res => res.json()).then(data => {
+    setJobs(data.data.myRnaProteinPredictions)
+    getResults(setJobs, key, uid)
+  })
+}
+
 const RnaProteinResultViz = ({ results, ...props }) => {
   var pathstr = "M 10 5"
   var x = 10
@@ -53,20 +87,6 @@ const JobRow = ({ jobname, datetime, sequence, pending, results }) => {
     }
   })
 
-  const colorFunc = (v) => {
-    if (v < 0.5) {
-      const r = 255
-      const g = Math.round(255*2*v)
-      const b = 0
-      return(`rgb(${r},${g},${b})`)
-    } else {
-      const r = Math.round(255*2*(1.0-v))
-      const g = 255
-      const b = 0
-      return(`rgb(${r},${g},${b})`)
-    }
-  }
-
   return(
     [
       <tr>
@@ -105,7 +125,6 @@ const RNAProteinPrediction = ({ firebase, limit }) => {
 
   const jobnameRef = useRef(null)
   const sequenceRef = useRef(null)
-  console.log(jobs)
   
   useEffect(() => {
     if (start) {
@@ -134,6 +153,7 @@ const RNAProteinPrediction = ({ firebase, limit }) => {
         }}),
       }).then(res => res.json()).then(data => {
         setJobs(data.data.myRnaProteinPredictions)
+        getResults(setJobs, firebase.auth.currentUser.c.b, firebase.auth.currentUser.uid)
       })
     }
   })
