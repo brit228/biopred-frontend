@@ -105,8 +105,12 @@ const JobRow = ({ jobname, datetime, sequence, pending, results }) => {
                 </Col>
               </Row>
               <Row>
-                <Col>
+                <Col md={6}>
                   <RnaProteinResultViz results={results} />
+                </Col>
+                <Col md={6}>
+                  <p><code>{results.map((r,i) => (r.interaction > 0.5 ? <b>{sequence[i]}</b> : sequence[i]))}</code></p>
+                  <p><code>{results.map((r,i) => (r.interaction > 0.5 ? <b>1</b> : '0'))}</code></p>
                 </Col>
               </Row>
             </Container>
