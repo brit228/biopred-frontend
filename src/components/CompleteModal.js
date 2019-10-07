@@ -44,8 +44,7 @@ const CompleteModal = ({ firebase, history, showComplete, checkUserComplete, use
               }
             })
           }).then(res => res.text()).then(data => {
-            console.log(data)
-            if (data.slice(0,8) === "SUCCESS") {
+            if (data.data.completeRegistration) {
               userCompleted(1000)
               history.push('/')
             }
