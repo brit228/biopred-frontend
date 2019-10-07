@@ -140,7 +140,6 @@ const JobRow = ({ jobname, datetime, sequence, pending, results }) => {
       <tr>
         <td>{jobname}</td>
         <td>{datetime.split('T')[0] + ' ' + datetime.split('T')[1].split('.')[0]}</td>
-        <td>{pending ? 'Pending' : 'Completed'}</td>
         <td><Button disabled={pending} onClick={() => {setOpen(!open)}}>{pending ? <Spinner animation="border" size="sm" /> : <FaChevronDown />}</Button></td>
       </tr>,
       <tr>
@@ -159,7 +158,7 @@ const JobRow = ({ jobname, datetime, sequence, pending, results }) => {
                 <Col md={6}>
                   <p><code>{results.map((r,i) => (r.interaction > 0.5 ? <b>{sequence[i]}</b> : sequence[i]))}</code></p>
                   <p><code>{results.map((r,i) => (r.interaction > 0.5 ? <b>1</b> : '0'))}</code></p>
-                  <div ref={chartRef} style={{width: "100%"}}></div>
+                  <div ref={chartRef} style={{width: "90%"}}></div>
                 </Col>
               </Row>
             </Container>
@@ -280,7 +279,6 @@ const RNAProteinPrediction = ({ firebase, limit }) => {
             <tr>
               <th>Job Name</th>
               <th>Time/Date Submitted</th>
-              <th>Status</th>
               <th>View</th>
             </tr>
           </thead>
