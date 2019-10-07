@@ -2,6 +2,7 @@ import React, {useState, useEffect, useRef} from 'react'
 import {Container, Jumbotron, Row, Col, InputGroup, FormControl, Button, Form, Spinner, Table, Collapse} from 'react-bootstrap'
 import { FaChevronDown } from 'react-icons/fa'
 import { withFirebase } from '../Firebase'
+import * as d3 from 'd3'
 
 const sleep = (milliseconds) => {
   return new Promise(resolve => setTimeout(resolve, milliseconds))
@@ -79,13 +80,60 @@ const RnaProteinResultViz = ({ results, ...props }) => {
 const JobRow = ({ jobname, datetime, sequence, pending, results }) => {
   const [open, setOpen] = useState(true)
   const [start, setStart] = useState(true)
+  const [svg, setSvg] = useState(null)
+  const chartRef = useRef(null)
   
   useEffect(() => {
     if (start) {
       setStart(false)
       setOpen(false)
+      setSvg(drawChart(chartRef))
     }
   })
+
+  const drawChart = (chartRef) => {
+    console.log(chartRef)
+    const height = 300
+    const width = chartRef.current.clientWidth
+    const margin = {
+      top: 20,
+      right: 30,
+      bottom: 30,
+      left: 40
+    }
+
+
+    const x = d3.scaleLinear().domain([0, sequence.length]).nice()
+      .range([margin.left, width - margin.right])
+    const y = d3.scaleLinear().domain([0, 1]).nice()
+      .range([height - margin.bottom, margin.top])
+    const xAxis = g => g.attr('transform', `translate(0,${height - margin.bottom})`).call(d3.axisBottom(x).ticks(width / 80).tickSizeOuter(0))
+    const yAxis = g => g.attr('transform', `translate(${margin.left},0)`)
+      .call(d3.axisLeft(y))
+      .call(g => g.select("domain").remove())
+    const line = d3.line().defined(d => !isNaN(d.interaction)).x((d, i) => x(i+1)).y(d => y(d.interaction))
+    const svg =  d3.select(chartRef.current).append('svg')
+      .attr('viewbox', [0, 0, width, height])
+      .attr('height', height)
+      .attr('width', width)
+
+    svg.append("g")
+      .call(xAxis)
+    
+    svg.append("g")
+      .call(yAxis)
+
+    svg.append("path")
+      .datum(results)
+      .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("stroke-width", 1.5)
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("d", line)
+    
+    return svg
+  }
 
   return(
     [
@@ -111,6 +159,7 @@ const JobRow = ({ jobname, datetime, sequence, pending, results }) => {
                 <Col md={6}>
                   <p><code>{results.map((r,i) => (r.interaction > 0.5 ? <b>{sequence[i]}</b> : sequence[i]))}</code></p>
                   <p><code>{results.map((r,i) => (r.interaction > 0.5 ? <b>1</b> : '0'))}</code></p>
+                  <div ref={chartRef} style={{width: "100%"}}></div>
                 </Col>
               </Row>
             </Container>
