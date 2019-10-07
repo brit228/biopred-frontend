@@ -92,7 +92,6 @@ const JobRow = ({ jobname, datetime, sequence, pending, results }) => {
   })
 
   const drawChart = (chartRef) => {
-    console.log(chartRef)
     const height = 300
     const width = chartRef.current.clientWidth
     const margin = {
@@ -112,6 +111,7 @@ const JobRow = ({ jobname, datetime, sequence, pending, results }) => {
       .call(d3.axisLeft(y))
       .call(g => g.select("domain").remove())
     const line = d3.line().defined(d => !isNaN(d.interaction)).x((d, i) => x(i+1)).y(d => y(d.interaction))
+    const dline = d3.line().x(d => x(d.v)).y(d => y(0.5))
     const svg =  d3.select(chartRef.current).append('svg')
       .attr('viewbox', [0, 0, width, height])
       .attr('height', height)
@@ -122,6 +122,16 @@ const JobRow = ({ jobname, datetime, sequence, pending, results }) => {
     
     svg.append("g")
       .call(yAxis)
+
+    svg.append("path")
+      .datum([{v: 0},{v: sequence.length+1}])
+      .attr("fill", "none")
+      .attr("stroke", "black")
+      .style("stroke-dasharray", ("3, 3"))
+      .attr("stroke-width", 1.0)
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("d", dline)
 
     svg.append("path")
       .datum(results)
